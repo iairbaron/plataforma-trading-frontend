@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -16,17 +16,20 @@ import {
   InputGroup,
   InputRightElement,
   FormErrorMessage,
-} from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
-import { authService } from '../../services/authService';
+  Container,
+  IconButton,
+} from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { Link } from "react-router-dom";
+import { authService } from "../../services/authService";
+import { Header } from "../Header";
 
 const loginSchema = z.object({
-  email: z.string()
-    .email('Invalid email address')
-    .min(1, 'Email is required'),
-  password: z.string()
-    .min(6, 'Password must be at least 6 characters')
-    .max(50, 'Password cannot exceed 50 characters'),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(50, "Password cannot exceed 50 characters"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -41,33 +44,49 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema)
+    resolver: zodResolver(loginSchema),
   });
 
   const mutation = useMutation({
     mutationFn: (data: LoginFormData) => authService.login(data),
     onSuccess: (response) => {
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
-      toast({
-        title: 'Login successful',
-        description: 'Welcome back!',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      
-      navigate('/dashboard');
+      if (response.data) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        navigate("/dashboard");
+      }
     },
     onError: (error: any) => {
-      toast({
-        title: 'Authentication error',
-        description: error.response?.data?.message || 'Invalid credentials',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      const errorData = error.response?.data;
+      if (errorData?.errors) {
+        // Handle validation errors
+        errorData.errors.forEach((err: any) => {
+          toast({
+            title: "Validation Error",
+            description: err.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        });
+      } else {
+        toast({
+          title: "Authentication error",
+          description: errorData?.message || "Invalid credentials",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     },
   });
 
@@ -78,60 +97,72 @@ export const LoginForm = () => {
   const togglePassword = () => setShowPassword(!showPassword);
 
   return (
-    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg" boxShadow="lg">
-      <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={4}>
-        <Text fontSize="2xl" fontWeight="bold" mb={4}>
-          Sign In
-        </Text>
-
-        <FormControl isInvalid={!!errors.email} isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input
-            {...register('email')}
-            type="email"
-            placeholder="you@example.com"
-          />
-          <FormErrorMessage>
-            {errors.email?.message}
-          </FormErrorMessage>
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.password} isRequired>
-          <FormLabel>Password</FormLabel>
-          <InputGroup>
-            <Input
-              {...register('password')}
-              type={showPassword ? "text" : "password"}
-              placeholder="********"
-            />
-            <InputRightElement width="4.5rem">
-              <Button h="1.75rem" size="sm" onClick={togglePassword}>
-                {showPassword ? "Hide" : "Show"}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <FormErrorMessage>
-            {errors.password?.message}
-          </FormErrorMessage>
-        </FormControl>
-
-        <Button
-          type="submit"
-          colorScheme="blue"
-          width="full"
-          mt={4}
-          isLoading={mutation.isPending}
+    <Box minH="100vh" bg="white">
+      <Header />
+      <Container maxW="container.sm" py={8}>
+        <VStack
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          spacing={6}
+          align="stretch"
         >
-          Sign In
-        </Button>
+          <Text fontSize="3xl" fontWeight="bold" textAlign="center">
+            Sign in{" "}
+          </Text>
+          
+          <FormControl isInvalid={!!errors.email} isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input
+              {...register("email")}
+              type="email"
+              placeholder="you@company.com"
+              size="lg"
+              height="56px"
+              fontSize="md"
+              bg="white"
+              borderColor="gray.300"
+            />
+            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+          </FormControl>
 
-        <Text mt={4}>
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:text-blue-800">
-            Sign Up
-          </Link>
-        </Text>
-      </VStack>
+          <FormControl isInvalid={!!errors.password} isRequired>
+            <FormLabel>Password</FormLabel>
+            <InputGroup size="lg">
+              <Input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="Strong password"
+                height="56px"
+                fontSize="md"
+                bg="white"
+                borderColor="gray.300"
+              />
+              <InputRightElement height="56px">
+                <IconButton
+                  variant="ghost"
+                  onClick={togglePassword}
+                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  size="sm"
+                />
+              </InputRightElement>
+            </InputGroup>
+            <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+          </FormControl>
+
+          <Button
+            type="submit"
+            colorScheme="red"
+            size="lg"
+            height="56px"
+            width="full"
+            fontSize="md"
+            isLoading={mutation.isPending}
+          >
+            Sign In
+          </Button>
+        </VStack>
+      </Container>
     </Box>
   );
-}; 
+};

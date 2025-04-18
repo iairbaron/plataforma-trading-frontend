@@ -16,9 +16,12 @@ import {
   InputGroup,
   InputRightElement,
   FormErrorMessage,
+  Container,
+  IconButton,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { authService } from "../../services/authService";
+import { Header } from "../Header";
 
 // Match backend validation rules
 const signupSchema = z
@@ -116,87 +119,116 @@ export const SignupForm = () => {
     setShowConfirmPassword(!showConfirmPassword);
 
   return (
-    <Box
-      maxW="md"
-      mx="auto"
-      mt={8}
-      p={6}
-      borderWidth={1}
-      borderRadius="lg"
-      boxShadow="lg"
-    >
-      <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={4}>
-        <Text fontSize="2xl" fontWeight="bold" mb={4}>
-          Sign Up
-        </Text>
-
-        <FormControl isInvalid={!!errors.name} isRequired>
-          <FormLabel>Name</FormLabel>
-          <Input {...register("name")} type="text" placeholder="Your name" />
-          <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.email} isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input
-            {...register("email")}
-            type="email"
-            placeholder="you@example.com"
-          />
-          <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.password} isRequired>
-          <FormLabel>Password</FormLabel>
-          <InputGroup>
-            <Input
-              {...register("password")}
-              type={showPassword ? "text" : "password"}
-              placeholder="********"
-            />
-            <InputRightElement width="4.5rem">
-              <Button h="1.75rem" size="sm" onClick={togglePassword}>
-                {showPassword ? "Hide" : "Show"}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-        </FormControl>
-
-        <FormControl isInvalid={!!errors.confirmPassword} isRequired>
-          <FormLabel>Confirm Password</FormLabel>
-          <InputGroup>
-            <Input
-              {...register("confirmPassword")}
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="********"
-            />
-            <InputRightElement width="4.5rem">
-              <Button h="1.75rem" size="sm" onClick={toggleConfirmPassword}>
-                {showConfirmPassword ? "Hide" : "Show"}
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          <FormErrorMessage>{errors.confirmPassword?.message}</FormErrorMessage>
-        </FormControl>
-
-        <Button
-          type="submit"
-          colorScheme="blue"
-          width="full"
-          mt={4}
-          isLoading={mutation.isPending}
+    <Box minH="100vh" bg="white">
+      <Header />
+      <Container maxW="container.sm" py={8}>
+        <VStack
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          spacing={6}
+          align="stretch"
         >
-          Sign Up
-        </Button>
+          <Text fontSize="3xl" fontWeight="bold" textAlign="center">
+            Sign up
+          </Text>
 
-        <Text mt={4}>
-          Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:text-blue-800">
-            Sign In
-          </Link>
-        </Text>
-      </VStack>
+          <FormControl isInvalid={!!errors.name} isRequired>
+            <FormLabel>Name</FormLabel>
+            <Input
+              {...register("name")}
+              type="text"
+              placeholder="Your full name"
+              size="lg"
+              height="56px"
+              fontSize="md"
+              bg="white"
+              borderColor="gray.300"
+            />
+            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.email} isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input
+              {...register("email")}
+              type="email"
+              placeholder="you@company.com"
+              size="lg"
+              height="56px"
+              fontSize="md"
+              bg="white"
+              borderColor="gray.300"
+            />
+            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.password} isRequired>
+            <FormLabel>Password</FormLabel>
+            <InputGroup size="lg">
+              <Input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="Strong password"
+                height="56px"
+                fontSize="md"
+                bg="white"
+                borderColor="gray.300"
+              />
+              <InputRightElement height="56px">
+                <IconButton
+                  variant="ghost"
+                  onClick={togglePassword}
+                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  size="sm"
+                />
+              </InputRightElement>
+            </InputGroup>
+            <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.confirmPassword} isRequired>
+            <FormLabel>Confirm Password</FormLabel>
+            <InputGroup size="lg">
+              <Input
+                {...register("confirmPassword")}
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Strong password"
+                height="56px"
+                fontSize="md"
+                bg="white"
+                borderColor="gray.300"
+              />
+              <InputRightElement height="56px">
+                <IconButton
+                  variant="ghost"
+                  onClick={toggleConfirmPassword}
+                  icon={showConfirmPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                  size="sm"
+                />
+              </InputRightElement>
+            </InputGroup>
+            <FormErrorMessage>
+              {errors.confirmPassword?.message}
+            </FormErrorMessage>
+          </FormControl>
+
+          <Button
+            type="submit"
+            colorScheme="red"
+            size="lg"
+            height="56px"
+            width="full"
+            fontSize="md"
+            isLoading={mutation.isPending}
+          >
+            Sign Up
+          </Button>
+        </VStack>
+      </Container>
     </Box>
   );
 };
