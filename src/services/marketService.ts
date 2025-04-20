@@ -15,7 +15,7 @@ export const marketService = {
     if (!response.ok) {
       throw new Error("Error al obtener los instrumentos");
     }
-
+    console.log("response", response);
     return response.json();
   },
 };

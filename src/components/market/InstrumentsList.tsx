@@ -1,7 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 import { InstrumentsSkeleton } from "./InstrumentsSkeleton";
-import { InstrumentsTable } from "./InstrumentsTable";
 import { useInstruments } from "../../hooks/useInstruments";
+import { InstrumentsTable } from "./InstrumentsTable";
 
 export const InstrumentsList = () => {
   const { data, isLoading, isError } = useInstruments();

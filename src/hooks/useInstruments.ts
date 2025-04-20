@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { marketService } from "../services/marketService";
 
-
-
-
 export const useInstruments = () => {
   return useQuery({
     queryKey: ["instruments"],

@@ -37,8 +37,7 @@ export const LoginForm = () => {
           isClosable: true,
         });
 
-        navigate("/");
-      }
+        navigate("/", { replace: true });      }
     },
     onError: (error: any) => {
       const errorData = error.response?.data;
