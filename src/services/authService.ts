@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+import { API_ROUTES } from '../config/api';
 
 interface LoginData {
   email: string;
@@ -35,18 +34,18 @@ interface AuthResponse {
 
 export const authService = {
   async login(data: LoginData): Promise<AuthResponse> {
-    const response = await axios.post(`${API_URL}/auth/login`, data);
+    const response = await axios.post(API_ROUTES.auth.login, data);
     return response.data;
   },
 
   async signup(data: SignupData): Promise<AuthResponse> {
-    const response = await axios.post(`${API_URL}/auth/signup`, data);
+    const response = await axios.post(API_ROUTES.auth.signup, data);
     return response.data;
   },
 
   async validateToken(token: string): Promise<boolean> {
     try {
-      await axios.get(`${API_URL}/auth/validate`, {
+      await axios.get(`${API_ROUTES.auth.login}/validate`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

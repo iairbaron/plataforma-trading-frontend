@@ -1,14 +1,31 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { LoginForm } from './components/auth/LoginForm';
-import { SignupForm } from './components/auth/SignupForm';
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthGuard } from "./components/AuthGuard/AuthGuard";
+import { MarketMonitor } from "./pages/Homepage";
+import "./App.css";
+import { SignupForm } from "./components/forms/SignUpForm";
+import { AuthLayout } from "./components/layout/AuthLayout";
+import { MainLayout } from "./components/layout/MainLayout";
+import { LoginPage } from "./pages/LoginPage";
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/signup" element={<SignupForm />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupForm />} />
+      </Route>
+
+      <Route
+        element={
+          <AuthGuard>
+            <MainLayout />
+          </AuthGuard>
+        }
+      >
+        <Route path="/instruments" element={<MarketMonitor />} />
+      </Route>
+
+      <Route path="/" element={<Navigate to="/instruments" replace />} />
     </Routes>
   );
 }
