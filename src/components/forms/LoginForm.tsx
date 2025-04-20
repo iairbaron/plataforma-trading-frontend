@@ -37,7 +37,7 @@ export const LoginForm = () => {
           isClosable: true,
         });
 
-        navigate("/instruments");
+        navigate("/");
       }
     },
     onError: (error: any) => {

@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthGuard } from "./components/AuthGuard/AuthGuard";
-import { MarketMonitor } from "./pages/Homepage";
+
 import "./App.css";
 import { SignupForm } from "./components/forms/SignUpForm";
 import { AuthLayout } from "./components/layout/AuthLayout";
 import { MainLayout } from "./components/layout/MainLayout";
 import { LoginPage } from "./pages/LoginPage";
+import { Homepage } from "./pages/Homepage";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           </AuthGuard>
         }
       >
-        <Route path="/instruments" element={<MarketMonitor />} />
+        <Route path="/" element={<Homepage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/instruments" replace />} />

@@ -40,7 +40,7 @@ export const SignupForm = () => {
           isClosable: true,
         });
 
-        navigate("/dashboard");
+        navigate("/");
       }
     },
     onError: (error: any) => {

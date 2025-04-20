@@ -1,7 +1,7 @@
-import { Box, Container, Heading } from '@chakra-ui/react';
-import { InstrumentsList } from '../components/InstrumentsList';
+import { Box, Container, Heading } from "@chakra-ui/react";
+import { InstrumentsList } from "../components/market/InstrumentsList";
 
-export const MarketMonitor = () => {
+export const Homepage = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <Box mb={8}>
@@ -10,4 +10,4 @@ export const MarketMonitor = () => {
       <InstrumentsList />
     </Container>
   );
-}; 
+};
