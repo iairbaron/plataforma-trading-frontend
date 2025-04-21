@@ -8,4 +8,5 @@ export interface Instrument {
   volume24h: number;
   change24h: number;
   change7d: number;
+  isFavorite?: boolean;
 }

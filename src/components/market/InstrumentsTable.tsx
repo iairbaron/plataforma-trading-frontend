@@ -9,10 +9,13 @@ import {
   Collapse,
   Box,
   Flex,
+  IconButton,
 } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
 import { Instrument } from "../../types/market";
 import { StatDisplayBox } from "./StatsBoxs";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { useFavorites } from "../../hooks/useFavorites";
 
 interface Props {
   instruments: Instrument[];
@@ -20,6 +23,8 @@ interface Props {
 
 export const InstrumentsTable = ({ instruments }: Props) => {
   const [openRow, setOpenRow] = useState<string | null>(null);
+
+  const { toggleFavorite } = useFavorites();
 
   const handleToggle = (id: string) => {
     setOpenRow((prev) => (prev === id ? null : id));
@@ -44,7 +49,28 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                 onClick={() => handleToggle(instrument.id)}
                 _hover={{ bg: "gray.50", cursor: "pointer" }}
               >
-                <Td>{instrument.name}</Td>
+                <Td>
+                  <Flex align="center" gap={2}>
+                    {instrument.name}
+                    <IconButton
+                      aria-label="Favorito"
+                      icon={
+                        instrument.isFavorite ? (
+                          <AiFillHeart />
+                        ) : (
+                          <AiOutlineHeart />
+                        )
+                      }
+                      size="sm"
+                      variant="ghost"
+                      color={instrument.isFavorite ? "blue.500" : "gray.300"}
+                      onClick={(e) => {
+                        e.stopPropagation(); // evita que colapse al tocar el corazón
+                        toggleFavorite.mutate(instrument.symbol.toLowerCase());
+                      }}
+                    />
+                  </Flex>
+                </Td>{" "}
                 <Td>{instrument.symbol.toUpperCase()}</Td>
                 <Td isNumeric>${instrument.price.toLocaleString()}</Td>
                 <Td
