@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { SignupInputs } from "./SignupInputs";
 import { authService } from "../../services/authService";
 import { SignupFormData, signupSchema } from "../../schemas/signupSchema";
+import { useAuth } from "../../hooks/useAuth";
 
 export const SignupForm = () => {
   const methods = useForm<SignupFormData>({
@@ -21,6 +22,7 @@ export const SignupForm = () => {
 
   const navigate = useNavigate();
   const toast = useToast();
+  const { setToken } = useAuth();
 
   const mutation = useMutation({
     mutationFn: (data: SignupFormData) => {
@@ -29,27 +31,28 @@ export const SignupForm = () => {
     },
     onSuccess: (response) => {
       if (response.data) {
-        localStorage.setItem("token", response.data.token);
+        // Actualizar el estado global de autenticación
+        setToken(response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
         toast({
-          title: "Registration successful",
-          description: "Welcome!",
+          title: "Registro exitoso",
+          description: "¡Bienvenido!",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
 
-        navigate("/", { replace: true });
+        navigate("/home", { replace: true });
       }
     },
     onError: (error: any) => {
       const errorData = error.response?.data;
       if (errorData?.errors) {
-        // Handle validation errors
+        // Manejar errores de validación
         errorData.errors.forEach((err: any) => {
           toast({
-            title: "Validation Error",
+            title: "Error de validación",
             description: err.message,
             status: "error",
             duration: 5000,
@@ -57,11 +60,11 @@ export const SignupForm = () => {
           });
         });
       } else {
-        // Handle other errors
+        // Manejar otros errores
         toast({
-          title: "Registration Error",
+          title: "Error de registro",
           description:
-            errorData?.message || "An error occurred during registration",
+            errorData?.message || "Ocurrió un error durante el registro",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -80,7 +83,7 @@ export const SignupForm = () => {
             onSubmit={methods.handleSubmit((data) => mutation.mutate(data))}
           >
             <Text fontSize="3xl" fontWeight="bold" textAlign="center">
-              Sign up
+              Registrarse
             </Text>
             <SignupInputs />
             <Button
@@ -91,7 +94,7 @@ export const SignupForm = () => {
               width="full"
               isLoading={mutation.isPending}
             >
-              Sign Up
+              Crear cuenta
             </Button>
           </VStack>
         </FormProvider>

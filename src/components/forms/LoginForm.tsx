@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginSchema, LoginFormData } from "../../schemas/loginSchema";
 import { LoginInputs } from "./LoginInputs";
 import { authService } from "../../services/authService";
+import { useAuth } from "../../hooks/useAuth";
 
 export const LoginForm = () => {
   const methods = useForm<LoginFormData>({
@@ -21,33 +22,35 @@ export const LoginForm = () => {
 
   const toast = useToast();
   const navigate = useNavigate();
+  const { setToken } = useAuth();
 
   const mutation = useMutation({
     mutationFn: (data: LoginFormData) => authService.login(data),
     onSuccess: (response) => {
       if (response.data) {
-        localStorage.setItem("token", response.data.token);
+        setToken(response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
         toast({
-          title: "Login successful",
-          description: "Welcome back!",
+          title: "Login exitoso",
+          description: "¡Bienvenido de nuevo!",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
 
-        navigate("/", { replace: true });      }
+        navigate("/home", { replace: true });
+      }
     },
     onError: (error: any) => {
       const errorData = error.response?.data;
       const description =
         errorData?.message ||
         errorData?.errors?.[0]?.message ||
-        "Invalid credentials";
+        "Credenciales inválidas";
 
       toast({
-        title: "Authentication error",
+        title: "Error de autenticación",
         description,
         status: "error",
         duration: 3000,
@@ -67,7 +70,7 @@ export const LoginForm = () => {
             align="stretch"
           >
             <Text fontSize="3xl" fontWeight="bold" textAlign="center">
-              Sign in
+              Iniciar sesión
             </Text>
             <LoginInputs />
             <Button
@@ -78,7 +81,7 @@ export const LoginForm = () => {
               width="full"
               isLoading={mutation.isPending}
             >
-              Sign In
+              Entrar
             </Button>
           </VStack>
         </FormProvider>

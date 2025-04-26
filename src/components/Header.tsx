@@ -1,11 +1,21 @@
 import { Flex, Text, Image, Button, HStack } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export const Header = () => {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { isAuthenticated, setToken } = useAuth();
   const isLoginPage = location.pathname === "/login";
+
+  const handleLogout = () => {
+    // Eliminar el token y limpiar información de usuario
+    setToken(null);
+    localStorage.removeItem('user');
+    
+    // Redireccionar al login
+    navigate('/login');
+  };
 
   return (
     <Flex
@@ -31,7 +41,7 @@ export const Header = () => {
           <HStack spacing={4}>
             <Button
               as={Link}
-              to="/"
+              to="/home"
               variant="ghost"
               colorScheme="blue"
               size="md"
@@ -46,7 +56,7 @@ export const Header = () => {
         {!isAuthenticated ? (
           <>
             <Text fontSize="md" color="gray.600">
-              {isLoginPage ? "Don't have an account yet?" : "Already have an account?"}
+              {isLoginPage ? "¿No tienes una cuenta?" : "¿Ya tienes cuenta?"}
             </Text>
             <Button
               as={Link}
@@ -60,7 +70,7 @@ export const Header = () => {
                 bg: "gray.50",
               }}
             >
-              {isLoginPage ? "Sign Up" : "Sign In"}
+              {isLoginPage ? "Registrarse" : "Iniciar Sesión"}
             </Button>
           </>
         ) : (
@@ -73,10 +83,7 @@ export const Header = () => {
             _hover={{
               bg: "gray.50",
             }}
-            onClick={() => {
-              // Implementar cierre de sesión
-              window.location.href = "/login";
-            }}
+            onClick={handleLogout}
           >
             Cerrar Sesión
           </Button>
