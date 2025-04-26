@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Box,
@@ -24,17 +24,16 @@ import {
 } from "@chakra-ui/react";
 import { walletService } from "../../services/walletService";
 import { formatCryptoAmount, formatPrice } from "../../utils/formatters";
+import BalanceOperationModal from "./BalanceOperationModal";
+import { OperationType } from "../../services/walletService";
 
 const WalletBalance: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [operationType, setOperationType] = useState<OperationType>("deposit");
+
   // Usar React Query para obtener los datos del wallet
-  const { 
-    data, 
-    isLoading, 
-    isError, 
-    error, 
-    refetch 
-  } = useQuery({
-    queryKey: ['wallet-balance'],
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["wallet-balance"],
     queryFn: walletService.getBalance,
     refetchOnWindowFocus: false,
   });
@@ -43,6 +42,11 @@ const WalletBalance: React.FC = () => {
   const rowBgEven = useColorModeValue("white", "gray.800");
   const rowBgOdd = useColorModeValue("gray.50", "gray.700");
 
+  const handleOpenModal = (type: OperationType) => {
+    setOperationType(type);
+    setIsModalOpen(true);
+  };
+
   // Si está cargando, mostrar un estado de loading
   if (isLoading) {
     return (
@@ -50,7 +54,7 @@ const WalletBalance: React.FC = () => {
         <Heading size="xl" mb={8}>
           <Skeleton height="40px" width="200px" />
         </Heading>
-        
+
         <Flex justify="space-between" mb={10}>
           <Box width="40%">
             <Skeleton height="24px" width="120px" mb={2} />
@@ -72,14 +76,14 @@ const WalletBalance: React.FC = () => {
   // Si hay un error, mostrar una alerta
   if (isError) {
     return (
-      <Alert 
-        status="error" 
-        variant="subtle" 
-        flexDirection="column" 
-        alignItems="center" 
-        justifyContent="center" 
-        textAlign="center" 
-        height="200px" 
+      <Alert
+        status="error"
+        variant="subtle"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        height="200px"
         borderRadius="md"
       >
         <AlertIcon boxSize="40px" mr={0} />
@@ -88,11 +92,7 @@ const WalletBalance: React.FC = () => {
         </AlertTitle>
         <AlertDescription maxWidth="sm">
           {(error as Error)?.message || "Ha ocurrido un error inesperado"}
-          <Button 
-            mt={4} 
-            colorScheme="red" 
-            onClick={() => refetch()}
-          >
+          <Button mt={4} colorScheme="red" onClick={() => refetch()}>
             Intentar nuevamente
           </Button>
         </AlertDescription>
@@ -117,24 +117,33 @@ const WalletBalance: React.FC = () => {
     symbol,
     amount: details.amount,
     currentPrice: details.currentPrice,
-    value: details.value
+    value: details.value,
   }));
 
   // Calcular el total
-  const totalValue = data.usdBalance + data.totalCoinValue;
 
   return (
     <Box>
-      <Heading size="xl" mb={8}>Balance total</Heading>
-      
-        <Box>
-          <Text fontSize="lg" color="gray.600">USD disponible</Text>
-          <Text fontSize="3xl" fontWeight="bold">${formatPrice(data.usdBalance)}</Text>
-          </Box>
-          <Box py={4}>
-          <Text fontSize="lg" color="gray.600">Valor de portafolio</Text>
-          <Text fontSize="3xl" fontWeight="bold">${formatPrice(totalValue)}</Text>
-          </Box>
+      <Heading size="xl" mb={8}>
+        Balance total
+      </Heading>
+
+      <Box>
+        <Text fontSize="lg" color="gray.600">
+          USD disponible
+        </Text>
+        <Text fontSize="3xl" fontWeight="bold">
+          ${formatPrice(data.usdBalance)}
+        </Text>
+      </Box>
+      <Box py={4}>
+        <Text fontSize="lg" color="gray.600">
+          Valor de portafolio
+        </Text>
+        <Text fontSize="3xl" fontWeight="bold">
+          ${formatPrice(data.totalCoinValue)}
+        </Text>
+      </Box>
 
       <Divider my={6} />
 
@@ -156,7 +165,7 @@ const WalletBalance: React.FC = () => {
                 </Td>
                 <Td isNumeric>
                   <Box display="inline-block" position="relative">
-                    <Tooltip 
+                    <Tooltip
                       label={`≈ $${formatPrice(coin.value)}`}
                       placement="top"
                       hasArrow
@@ -184,15 +193,31 @@ const WalletBalance: React.FC = () => {
       )}
 
       <Flex justify="center" mt={10} gap={4}>
-        <Button colorScheme="green" size="lg" width="200px">
+        <Button
+          colorScheme="green"
+          size="lg"
+          width="200px"
+          onClick={() => handleOpenModal("deposit")}
+        >
           Depositar
         </Button>
-        <Button variant="outline" size="lg" width="200px">
+        <Button
+          variant="outline"
+          size="lg"
+          width="200px"
+          onClick={() => handleOpenModal("withdraw")}
+        >
           Retirar
         </Button>
       </Flex>
+
+      <BalanceOperationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        operationType={operationType}
+      />
     </Box>
   );
 };
 
-export default WalletBalance; 
+export default WalletBalance;
