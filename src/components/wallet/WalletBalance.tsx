@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Box,
   Heading,
@@ -22,21 +21,24 @@ import {
   AlertDescription,
   Center,
 } from "@chakra-ui/react";
-import { walletService } from "../../services/walletService";
 import { formatCryptoAmount, formatPrice } from "../../utils/formatters";
 import BalanceOperationModal from "./BalanceOperationModal";
 import { OperationType } from "../../services/walletService";
+import { useWallet } from "../../hooks/useWallet";
 
 const WalletBalance: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operationType, setOperationType] = useState<OperationType>("deposit");
-
-  // Usar React Query para obtener los datos del wallet
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["wallet-balance"],
-    queryFn: walletService.getBalance,
-    refetchOnWindowFocus: false,
-  });
+  
+  // Usar nuestro hook personalizado
+  const { 
+    walletData: data, 
+    isLoading, 
+    isError, 
+    error, 
+    refetch,
+    userName
+  } = useWallet();
 
   // Calculamos el color para alternancia de filas
   const rowBgEven = useColorModeValue("white", "gray.800");
@@ -120,12 +122,10 @@ const WalletBalance: React.FC = () => {
     value: details.value,
   }));
 
-  // Calcular el total
-
   return (
     <Box>
       <Heading size="xl" mb={8}>
-        Balance total
+        {userName ? `Balance de ${userName}` : "Balance total"}
       </Heading>
 
       <Box>

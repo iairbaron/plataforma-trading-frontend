@@ -1,4 +1,5 @@
 import { API_ROUTES } from "../config/api";
+import { useAuth } from "../hooks/useAuth";
 
 export interface OrderData {
   symbol: string;
@@ -38,7 +39,7 @@ export const orderService = {
    * @returns Respuesta de la orden
    */
   async createOrder(orderData: OrderData): Promise<OrderResponse> {
-    const token = localStorage.getItem('token');
+    const token = useAuth.getState().token;
     
     if (!token) {
       throw new OrderError('No hay token de autenticación');

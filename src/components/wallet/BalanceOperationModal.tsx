@@ -12,15 +12,14 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  useToast,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { walletService, OperationType } from '../../services/walletService';
+import { OperationType } from '../../services/walletService';
+import { useWallet } from '../../hooks/useWallet';
 
 // Schema de validación
 const balanceOperationSchema = z.object({
@@ -44,8 +43,7 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
   operationType,
 }) => {
   const [error, setError] = useState<string | null>(null);
-  const toast = useToast();
-  const queryClient = useQueryClient();
+  const { updateBalance, isUpdating, userName } = useWallet();
 
   // Configuración del formulario
   const {
@@ -62,34 +60,22 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
 
   const title = operationType === 'deposit' ? 'Depositar fondos' : 'Retirar fondos';
   const buttonColor = operationType === 'deposit' ? 'green' : 'red';
-
-  const operationMutation = useMutation({
-    mutationFn: walletService.updateBalance,
-    onSuccess: (data) => {
-      toast({
-        title: 'Operación exitosa',
-        description: `Has ${operationType === 'deposit' ? 'depositado' : 'retirado'} $${data.data.balance.toFixed(2)} USD en tu cuenta.`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-      // Invalidar la consulta para actualizar la UI
-      queryClient.invalidateQueries({ queryKey: ['wallet-balance'] });
-      reset();
-      setError(null);
-      onClose();
-    },
-    onError: (err: Error) => {
-      console.error(err);
-      setError(err.message || 'Ha ocurrido un error al procesar tu operación');
-    },
-  });
-
+  
   const onSubmit = handleSubmit((data) => {
     setError(null);
-    operationMutation.mutate({
+    updateBalance({
       operation: operationType,
       amount: data.amount,
+    }, {
+      onSuccess: () => {
+        reset();
+        setError(null);
+        onClose();
+      },
+      onError: (err: Error) => {
+        console.error(err);
+        setError(err.message || 'Ha ocurrido un error al procesar tu operación');
+      }
     });
   });
 
@@ -103,7 +89,9 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
+        <ModalHeader>
+          {userName ? `${title} - ${userName}` : title}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4} as="form" onSubmit={onSubmit}>
@@ -135,7 +123,7 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
           </Button>
           <Button
             colorScheme={buttonColor}
-            isLoading={isSubmitting || operationMutation.isPending}
+            isLoading={isSubmitting || isUpdating}
             onClick={onSubmit}
           >
             {operationType === 'deposit' ? 'Depositar' : 'Retirar'}

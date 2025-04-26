@@ -14,6 +14,7 @@ import { SignupInputs } from "./SignupInputs";
 import { authService } from "../../services/authService";
 import { SignupFormData, signupSchema } from "../../schemas/signupSchema";
 import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
 
 export const SignupForm = () => {
   const methods = useForm<SignupFormData>({
@@ -23,6 +24,7 @@ export const SignupForm = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { setToken } = useAuth();
+  const { updateUser } = useUser();
 
   const mutation = useMutation({
     mutationFn: (data: SignupFormData) => {
@@ -33,7 +35,7 @@ export const SignupForm = () => {
       if (response.data) {
         // Actualizar el estado global de autenticación
         setToken(response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        updateUser(response.data.user);
 
         toast({
           title: "Registro exitoso",

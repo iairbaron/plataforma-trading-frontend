@@ -1,5 +1,6 @@
 import { API_ROUTES } from "../config/api";
 import { WalletBalance, WalletResponse, WalletOperationResponse } from "../types/wallet";
+import { useAuth } from "../hooks/useAuth";
 
 export type OperationType = "deposit" | "withdraw";
 
@@ -13,7 +14,7 @@ export const walletService = {
    * Obtiene el balance del wallet del usuario
    */
   async getBalance(): Promise<WalletBalance> {
-    const token = localStorage.getItem('token');
+    const token = useAuth.getState().token;
     
     if (!token) {
       throw new Error('No hay token de autenticación');
@@ -40,7 +41,7 @@ export const walletService = {
    * Actualiza el balance del wallet (depositar o retirar)
    */
   async updateBalance({ operation, amount }: BalanceOperationParams): Promise<WalletOperationResponse> {
-    const token = localStorage.getItem('token');
+    const token = useAuth.getState().token;
     
     if (!token) {
       throw new Error('No hay token de autenticación');

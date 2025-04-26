@@ -1,20 +1,30 @@
-import { Flex, Text, Image, Button, HStack } from "@chakra-ui/react";
+import {
+  Flex,
+  Text,
+  Image,
+  Button,
+  HStack,
+  Avatar,
+  Spinner,
+} from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUser";
 
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, setToken } = useAuth();
+  const { user, isLoading, clearUser } = useUser();
   const isLoginPage = location.pathname === "/login";
 
   const handleLogout = () => {
     // Eliminar el token y limpiar información de usuario
     setToken(null);
-    localStorage.removeItem('user');
-    
+    clearUser();
+
     // Redireccionar al login
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -29,28 +39,12 @@ export const Header = () => {
       borderColor="gray.200"
       bg="white"
     >
-      <Flex alignItems="center">
         <Image
           src="/Logo_PUENTE_ARG_Negro_Reducido.svg"
           alt="Puente Logo"
           height="40px"
           mr={6}
         />
-        
-        {isAuthenticated && (
-          <HStack spacing={4}>
-            <Button
-              as={Link}
-              to="/home"
-              variant="ghost"
-              colorScheme="blue"
-              size="md"
-            >
-              Trading Platform
-            </Button>
-          </HStack>
-        )}
-      </Flex>
 
       <Flex alignItems="center" gap={2}>
         {!isAuthenticated ? (
@@ -74,21 +68,39 @@ export const Header = () => {
             </Button>
           </>
         ) : (
-          <Button
-            variant="outline"
-            size="md"
-            borderColor="gray.300"
-            color="gray.700"
-            bg="white"
-            _hover={{
-              bg: "gray.50",
-            }}
-            onClick={handleLogout}
-          >
-            Cerrar Sesión
-          </Button>
+          <HStack spacing={4}>
+            <Flex alignItems="center" gap={2}>
+              {isLoading ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <Avatar
+                    size="sm"
+                    name={user?.name || user?.email || ""}
+                    bg="blue.500"
+                  />
+                  <Text fontWeight="medium">
+                    {user?.name || user?.email || ""}
+                  </Text>
+                </>
+              )}
+            </Flex>
+            <Button
+              variant="outline"
+              size="md"
+              borderColor="gray.300"
+              color="gray.700"
+              bg="white"
+              _hover={{
+                bg: "gray.50",
+              }}
+              onClick={handleLogout}
+            >
+              Cerrar Sesión
+            </Button>
+          </HStack>
         )}
       </Flex>
     </Flex>
   );
-}; 
+};

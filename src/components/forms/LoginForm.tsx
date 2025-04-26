@@ -14,6 +14,7 @@ import { loginSchema, LoginFormData } from "../../schemas/loginSchema";
 import { LoginInputs } from "./LoginInputs";
 import { authService } from "../../services/authService";
 import { useAuth } from "../../hooks/useAuth";
+import { useUser } from "../../hooks/useUser";
 
 export const LoginForm = () => {
   const methods = useForm<LoginFormData>({
@@ -23,13 +24,14 @@ export const LoginForm = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const { setToken } = useAuth();
+  const { updateUser } = useUser();
 
   const mutation = useMutation({
     mutationFn: (data: LoginFormData) => authService.login(data),
     onSuccess: (response) => {
       if (response.data) {
         setToken(response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        updateUser(response.data.user);
 
         toast({
           title: "Login exitoso",
