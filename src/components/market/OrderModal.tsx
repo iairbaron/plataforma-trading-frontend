@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,10 @@ import {
   Divider,
   Stack,
   FormErrorMessage,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  CloseButton,
 } from "@chakra-ui/react";
 
 interface OrderModalProps {
@@ -60,6 +64,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
   symbol,
 }) => {
   const toast = useToast();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   // Valores simulados
   const currentPrice = type === "buy" ? 1807.18 : 1805.0; // Precio simulado para ETH
@@ -99,24 +104,41 @@ const OrderModal: React.FC<OrderModalProps> = ({
   };
 
   const mutation = useMutation<unknown, Error, OrderData>({
-    mutationFn: (orderData) => {
-      return fetch(API_ROUTES.orders.create, {
+    mutationFn: async (orderData) => {
+      const response = await fetch(API_ROUTES.orders.create, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(orderData),
-      }).then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        return response.json();
       });
+      
+      if (!response.ok) {
+        // Intentar obtener el mensaje de error del backend
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
     },
   });
 
   const onSubmit = hookFormSubmit((data) => {
+    // Limpiar error anterior si existe
+    setErrorMessage(null);
+    
+    // Validación adicional
+    if (data.amount <= 0) {
+      setErrorMessage("La cantidad debe ser mayor que 0");
+      return;
+    }
+    
+    if (data.totalValue <= 0) {
+      setErrorMessage("El valor total debe ser mayor que 0");
+      return;
+    }
+    
     const orderData = {
       symbol,
       amount: data.amount,
@@ -144,10 +166,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
       },
       onError: (error: any) => {
         console.error(error);
+        // Guardar el mensaje de error para mostrarlo en el modal
+        setErrorMessage(error.message || "Ha ocurrido un error al procesar tu orden");
+        
         toast({
-          title: "Error",
-          description:
-            error.message || "Ha ocurrido un error al procesar tu orden",
+          title: "Error en la operación",
+          description: error.message || "Ha ocurrido un error al procesar tu orden",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -157,8 +181,17 @@ const OrderModal: React.FC<OrderModalProps> = ({
   });
 
   const handleClose = () => {
+    setErrorMessage(null);
     reset();
     onClose();
+  };
+
+  const clearError = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setErrorMessage(null);
   };
 
   return (
@@ -170,6 +203,19 @@ const OrderModal: React.FC<OrderModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          {errorMessage && (
+            <Alert status="error" mb={4} borderRadius="md">
+              <AlertIcon />
+              <AlertDescription>{errorMessage}</AlertDescription>
+              <CloseButton 
+                position="absolute" 
+                right="8px" 
+                top="8px"
+                onClick={clearError}
+              />
+            </Alert>
+          )}
+          
           <form id="order-form" onSubmit={onSubmit}>
             <Stack spacing={4}>
               <FormControl isInvalid={!!errors.amount}>
@@ -239,8 +285,14 @@ const OrderModal: React.FC<OrderModalProps> = ({
             form="order-form"
             isLoading={mutation.isPending || isSubmitting}
             loadingText="Procesando"
+            isDisabled={isSubmitting}
+            onClick={() => {
+              if (errorMessage) {
+                clearError();
+              }
+            }}
           >
-            Confirmar
+            {errorMessage ? "Volver a intentar" : "Confirmar"}
           </Button>
           <Button variant="ghost" onClick={handleClose}>
             Cancelar
