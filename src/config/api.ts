@@ -11,4 +11,7 @@ export const API_ROUTES = {
   orders: {
     create: `${API_BASE_URL}/api/orders`,
   },
+  wallet: {
+    balance: `${API_BASE_URL}/api/wallet/balance`,
+  }
 } as const; 
