@@ -8,4 +8,7 @@ export const API_ROUTES = {
   market: {
     instruments: `${API_BASE_URL}/api/market/instruments`,
   },
+  orders: {
+    create: `${API_BASE_URL}/api/orders`,
+  },
 } as const; 

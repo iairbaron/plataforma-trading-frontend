@@ -2,11 +2,9 @@ import {
   Box,
   Button,
   Flex,
-  FormLabel,
   Input,
   InputGroup,
   InputLeftElement,
-  Switch,
   Text,
 } from "@chakra-ui/react";
 import { InstrumentsSkeleton } from "./InstrumentsSkeleton";

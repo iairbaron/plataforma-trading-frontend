@@ -10,12 +10,14 @@ import {
   Box,
   Flex,
   IconButton,
+  Button,
 } from "@chakra-ui/react";
 import { useState, Fragment } from "react";
 import { Instrument } from "../../types/market";
 import { StatDisplayBox } from "./StatsBoxs";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useFavorites } from "../../hooks/useFavorites";
+import OrderModal from "./OrderModal";
 
 interface Props {
   instruments: Instrument[];
@@ -23,11 +25,24 @@ interface Props {
 
 export const InstrumentsTable = ({ instruments }: Props) => {
   const [openRow, setOpenRow] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [selectedSymbol, setSelectedSymbol] = useState("");
 
   const { toggleFavorite } = useFavorites();
 
   const handleToggle = (id: string) => {
     setOpenRow((prev) => (prev === id ? null : id));
+  };
+
+  const openModal = (type: string, symbol: string) => {
+    setModalType(type);
+    setSelectedSymbol(symbol);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -85,6 +100,30 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                 >
                   {instrument.change7d.toFixed(2)}%
                 </Td>
+                <Td>
+                  <Flex gap={2}>
+                    <Button 
+                      size="sm" 
+                      colorScheme="green" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal("buy", instrument.symbol);
+                      }}
+                    >
+                      Comprar
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      colorScheme="red" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal("sell", instrument.symbol);
+                      }}
+                    >
+                      Vender
+                    </Button>
+                  </Flex>
+                </Td>
               </Tr>
               {openRow === instrument.id && (
                 <Tr>
@@ -114,6 +153,12 @@ export const InstrumentsTable = ({ instruments }: Props) => {
           ))}
         </Tbody>
       </Table>
+      <OrderModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        type={modalType}
+        symbol={selectedSymbol}
+      />
     </TableContainer>
   );
 };
