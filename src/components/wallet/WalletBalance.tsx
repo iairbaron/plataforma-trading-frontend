@@ -23,21 +23,7 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { walletService } from "../../services/walletService";
-
-// Función para formatear cantidades de criptomonedas
-const formatCryptoAmount = (amount: number): string => {
-  // Para cantidades enteras o muy pequeñas
-  if (amount >= 1) {
-    return amount.toFixed(2);
-  } else if (amount >= 0.001) {
-    return amount.toFixed(3);
-  } else if (amount >= 0.00001) {
-    return amount.toFixed(5);
-  } else {
-    // Para valores extremadamente pequeños, usamos notación científica
-    return amount.toExponential(2);
-  }
-};
+import { formatCryptoAmount, formatPrice } from "../../utils/formatters";
 
 const WalletBalance: React.FC = () => {
   // Usar React Query para obtener los datos del wallet
@@ -143,11 +129,11 @@ const WalletBalance: React.FC = () => {
       
         <Box>
           <Text fontSize="lg" color="gray.600">USD disponible</Text>
-          <Text fontSize="3xl" fontWeight="bold">${data.usdBalance.toFixed(2)}</Text>
+          <Text fontSize="3xl" fontWeight="bold">${formatPrice(data.usdBalance)}</Text>
           </Box>
           <Box py={4}>
           <Text fontSize="lg" color="gray.600">Valor de portafolio</Text>
-          <Text fontSize="3xl" fontWeight="bold">${totalValue.toFixed(2)}</Text>
+          <Text fontSize="3xl" fontWeight="bold">${formatPrice(totalValue)}</Text>
           </Box>
 
       <Divider my={6} />
@@ -171,7 +157,7 @@ const WalletBalance: React.FC = () => {
                 <Td isNumeric>
                   <Box display="inline-block" position="relative">
                     <Tooltip 
-                      label={`≈ $${coin.value.toFixed(2)}`}
+                      label={`≈ $${formatPrice(coin.value)}`}
                       placement="top"
                       hasArrow
                       bg="gray.700"
@@ -185,8 +171,8 @@ const WalletBalance: React.FC = () => {
                     </Tooltip>
                   </Box>
                 </Td>
-                <Td isNumeric>${coin.currentPrice.toFixed(2)}</Td>
-                <Td isNumeric>${coin.value.toFixed(2)}</Td>
+                <Td isNumeric>${formatPrice(coin.currentPrice)}</Td>
+                <Td isNumeric>${formatPrice(coin.value)}</Td>
               </Tr>
             ))}
           </Tbody>

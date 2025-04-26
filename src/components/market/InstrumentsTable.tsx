@@ -26,7 +26,7 @@ interface Props {
 export const InstrumentsTable = ({ instruments }: Props) => {
   const [openRow, setOpenRow] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("");
+  const [modalType, setModalType] = useState<"buy" | "sell">("buy");
   const [selectedSymbol, setSelectedSymbol] = useState("");
 
   const { toggleFavorite } = useFavorites();
@@ -35,7 +35,7 @@ export const InstrumentsTable = ({ instruments }: Props) => {
     setOpenRow((prev) => (prev === id ? null : id));
   };
 
-  const openModal = (type: string, symbol: string) => {
+  const openModal = (type: "buy" | "sell", symbol: string) => {
     setModalType(type);
     setSelectedSymbol(symbol);
     setModalOpen(true);
