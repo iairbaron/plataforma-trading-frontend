@@ -27,13 +27,14 @@ export const useWallet = () => {
   const updateBalanceMutation = useMutation({
     mutationFn: ({ operation, amount }: { operation: OperationType; amount: number }) => 
       walletService.updateBalance({ operation, amount }),
-    onSuccess: (data) => {
-      const operationText = data.data.balance > 0 ? "depositado" : "retirado";
+    onSuccess: (data, variables) => {
+      const { operation, amount } = variables;
+      const operationText = operation === "deposit" ? "depositado" : "retirado";
       const userName = user?.name ? ` ${user.name}` : "";
       
       toast({
         title: "Operación exitosa",
-        description: `¡Hola${userName}! Has ${operationText} $${Math.abs(data.data.balance).toFixed(2)} USD en tu cuenta.`,
+        description: `¡Hola${userName}! Has ${operationText} $${amount.toFixed(2)} USD en tu cuenta.`,
         status: "success",
         duration: 5000,
         isClosable: true,
