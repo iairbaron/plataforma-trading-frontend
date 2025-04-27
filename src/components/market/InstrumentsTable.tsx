@@ -18,6 +18,7 @@ import { StatDisplayBox } from "./StatsBoxs";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useFavorites } from "../../hooks/useFavorites";
 import OrderModal from "./OrderModal";
+import { formatPrice } from "../../utils/formatters";
 
 interface Props {
   instruments: Instrument[];
@@ -82,14 +83,14 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                       variant="ghost"
                       color={instrument.isFavorite ? "blue.500" : "gray.300"}
                       onClick={(e) => {
-                        e.stopPropagation(); // evita que colapse al tocar el corazón
+                        e.stopPropagation();
                         toggleFavorite.mutate(instrument.symbol.toLowerCase());
                       }}
                     />
                   </Flex>
                 </Td>{" "}
                 <Td>{instrument.symbol.toUpperCase()}</Td>
-                <Td isNumeric>${instrument.price.toLocaleString()}</Td>
+                <Td isNumeric>${formatPrice(instrument.price)}</Td>
                 <Td
                   isNumeric
                   color={instrument.change24h >= 0 ? "green.500" : "red.500"}
@@ -104,9 +105,9 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                 </Td>
                 <Td>
                   <Flex gap={2}>
-                    <Button 
-                      size="sm" 
-                      colorScheme="green" 
+                    <Button
+                      size="sm"
+                      colorScheme="green"
                       onClick={(e) => {
                         e.stopPropagation();
                         openModal("buy", instrument.symbol, instrument.price);
@@ -114,9 +115,9 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                     >
                       Comprar
                     </Button>
-                    <Button 
-                      size="sm" 
-                      colorScheme="red" 
+                    <Button
+                      size="sm"
+                      colorScheme="red"
                       onClick={(e) => {
                         e.stopPropagation();
                         openModal("sell", instrument.symbol, instrument.price);
