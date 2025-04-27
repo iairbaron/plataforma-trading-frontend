@@ -4,8 +4,7 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  NumberInput,
-  NumberInputField,
+  Input,
 } from "@chakra-ui/react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import { OrderFormValues } from "../../hooks/useOrderForm";
@@ -36,15 +35,14 @@ const OrderForm: React.FC<OrderFormProps> = ({
           name="totalValue"
           control={control}
           render={({ field }) => (
-            <NumberInput
+            <Input
+              type="number"
+              step="any"
               min={0}
-              precision={2}
-              step={10}
+              placeholder="Monto en USD"
               value={field.value}
-              onChange={handleTotalChange}
-            >
-              <NumberInputField placeholder="Monto en USD" />
-            </NumberInput>
+              onChange={(e) => handleTotalChange(e.target.value)}
+            />
           )}
         />
         <FormErrorMessage>
@@ -59,16 +57,15 @@ const OrderForm: React.FC<OrderFormProps> = ({
           name="amount"
           control={control}
           render={({ field }) => (
-            <NumberInput
+            <Input
+              type="number"
+              step="any"
               min={0}
               max={maxAmount}
-              precision={4}
-              step={0.01}
+              placeholder="Cantidad a operar"
               value={field.value}
-              onChange={handleAmountChange}
-            >
-              <NumberInputField placeholder="Cantidad a operar" />
-            </NumberInput>
+              onChange={(e) => handleAmountChange(e.target.value)}
+            />
           )}
         />
         <FormErrorMessage>
