@@ -13,6 +13,9 @@ import {
   Alert,
   AlertIcon,
   Flex,
+  Divider,
+  Center,
+  VStack,
 } from "@chakra-ui/react";
 import { useOrderForm } from "../../hooks/useOrderForm";
 import OrderForm from "./OrderForm";
@@ -38,9 +41,36 @@ const OrderModal: React.FC<OrderModalProps> = ({
   const currentPrice = type === "buy" ? 1807.18 : 1805.0;
 
   // Obtener el balance del wallet
-  const { walletData } = useWallet();
-  const coinBalance = walletData?.coinDetails[symbol.toLowerCase()]?.amount || 0;
-  const coinBalanceUSD = coinBalance * currentPrice;
+  const { walletData, isError: isWalletError, refetch: refetchWallet } = useWallet();
+
+  // Si hay error al cargar los datos del wallet
+  if (isWalletError || !walletData || walletData.coinDetails[symbol.toLowerCase()]?.amount < 0) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Error</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Center py={8}>
+              <VStack spacing={4}>
+                <Alert status="error">
+                  <AlertIcon />
+                  No se pudieron cargar los datos de las monedas
+                </Alert>
+                <Button onClick={() => refetchWallet()}>
+                  Intentar nuevamente
+                </Button>
+              </VStack>
+            </Center>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  const coinBalance = walletData.coinDetails[symbol.toLowerCase()]?.amount || 0;
+  const usdBalance = walletData.usdBalance || 0;
 
   // Usar nuestro hook personalizado
   const {
@@ -66,6 +96,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
   // Calcular balance restante para ventas
   const remainingBalance = type === "sell" ? coinBalance - (watchAmount || 0) : coinBalance;
   const remainingBalanceUSD = remainingBalance * currentPrice;
+  // Calcular balance USD restante para compras
+  const remainingUsdBalance = type === "buy" ? usdBalance - (watchTotalValue || 0) : usdBalance;
 
   return (
     <Modal isOpen={isOpen} onClose={() => handleClose(onClose)} isCentered>
@@ -76,29 +108,37 @@ const OrderModal: React.FC<OrderModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* Mostrar balance actual y restante para ventas */}
-          {type === "sell" && (
-            <Box mb={4} borderWidth="1px" borderRadius="md" p={3}>
+          {/* Mostrar balance disponible */}
+          <Box mb={4} borderWidth="1px" borderRadius="md" p={3}>
+            <Text fontSize="sm" color="gray.600" mb={2}>Balance disponible:</Text>
+            {type === "buy" ? (
+              // Balance para compras (USD)
               <Flex justify="space-between" align="center">
-                <Text fontSize="sm" color="gray.600">Balance actual:</Text>
-                <Box textAlign="right">
-                  <Text fontSize="sm" fontWeight="medium">
-                    {formatCryptoAmount(remainingBalance)} {symbol.toUpperCase()}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">
-                    ≈ ${formatPrice(remainingBalanceUSD)}
-                  </Text>
-                </Box>
+                <Text fontSize="sm" fontWeight="medium">
+                  ${formatPrice(remainingUsdBalance)} USD
+                </Text>
               </Flex>
+            ) : (
+              // Balance para ventas (Cripto + USD)
+              <Flex justify="space-between" align="center">
+                <Text fontSize="sm" fontWeight="medium">
+                  {formatCryptoAmount(remainingBalance)} {symbol.toUpperCase()}
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  ≈ ${formatPrice(remainingBalanceUSD)}
+                </Text>
+              </Flex>
+            )}
 
-              {remainingBalance < 0 && (
-                <Alert status="error" size="sm" mt={2}>
-                  <AlertIcon />
-                  No tienes suficiente balance para esta operación
-                </Alert>
-              )}
-            </Box>
-          )}
+            {((type === "sell" && remainingBalance < 0) || 
+              (type === "buy" && remainingUsdBalance < 0)) && (
+              <Alert status="error" size="sm" mt={2}>
+                <AlertIcon />
+                No tienes suficiente balance para esta operación
+              </Alert>
+            )}
+          </Box>
+          <Divider mb={4} />
 
           {/* Componente de alerta de error */}
           <ErrorAlert message={errorMessage} onClose={clearError} />
@@ -131,7 +171,11 @@ const OrderModal: React.FC<OrderModalProps> = ({
             form="order-form"
             isLoading={mutation.isPending || isSubmitting}
             loadingText="Procesando"
-            isDisabled={isSubmitting || (type === "sell" && remainingBalance < 0)}
+            isDisabled={
+              isSubmitting || 
+              (type === "sell" && remainingBalance < 0) ||
+              (type === "buy" && remainingUsdBalance < 0)
+            }
             onClick={() => {
               if (errorMessage) {
                 clearError();

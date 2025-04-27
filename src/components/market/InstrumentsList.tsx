@@ -33,6 +33,15 @@ export const InstrumentsList = () => {
     );
   }
 
+  // Mostrar error si el array de coins está vacío
+  if (!instrumentsData.coins || instrumentsData.coins.length === 0) {
+    return (
+      <Box p={4}>
+        <Text color="red.500">No se pudieron cargar las monedas. Intenta nuevamente más tarde.</Text>
+      </Box>
+    );
+  }
+
   // Enriquecer instrumentos con isFavorite
   const enrichedInstruments = instrumentsData.coins.map((coin) => ({
     ...coin,
