@@ -10,7 +10,6 @@ export const useAuth = create<AuthState>((set) => ({
   token: localStorage.getItem('token'),
   isAuthenticated: !!localStorage.getItem('token'),
   setToken: (token: string | null) => {
-    console.log("setting token", token);
     if (token) {
       localStorage.setItem('token', token);
     } else {

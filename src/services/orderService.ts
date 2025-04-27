@@ -46,6 +46,7 @@ export const orderService = {
     }
     
     try {
+
       const response = await fetch(API_ROUTES.orders.create, {
         method: "POST",
         headers: {

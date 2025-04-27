@@ -29,6 +29,7 @@ interface OrderModalProps {
   onClose: () => void;
   type: "buy" | "sell";
   symbol: string;
+  price: number;
 }
 
 const OrderModal: React.FC<OrderModalProps> = ({
@@ -36,9 +37,9 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   type,
   symbol,
+  price,
 }) => {
-  // Precio simulado - En una implementación real, esto vendría de una API o contexto
-  const currentPrice = type === "buy" ? 1807.18 : 1805.0;
+  const currentPrice = price;
 
   // Obtener el balance del wallet
   const { walletData, isError: isWalletError, refetch: refetchWallet } = useWallet();

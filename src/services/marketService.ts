@@ -5,7 +5,6 @@ import { Instrument } from "../types/market";
 export const marketService = {
   async getInstruments(): Promise<{ coins: Instrument[] }> {
     const token = useAuth.getState().token;
-    console.log("setting token", token);
 
     const response = await fetch(API_ROUTES.market.instruments, {
       headers: {
@@ -16,7 +15,6 @@ export const marketService = {
     if (!response.ok) {
       throw new Error("Error al obtener los instrumentos");
     }
-    console.log("response", response);
     return response.json();
   },
 };

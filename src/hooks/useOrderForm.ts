@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { orderService, OrderData } from '../services/orderService';
 import { formatCryptoAmount } from '../utils/formatters';
@@ -30,6 +30,7 @@ interface UseOrderFormProps {
 export const useOrderForm = ({ symbol, type, currentPrice, onSuccess }: UseOrderFormProps) => {
   const toast = useToast();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Configuración del formulario
   const form = useForm<OrderFormValues>({
@@ -67,6 +68,7 @@ export const useOrderForm = ({ symbol, type, currentPrice, onSuccess }: UseOrder
         duration: 5000,
         isClosable: true,
       });
+      queryClient.invalidateQueries({ queryKey: ['wallet-balance'] });
       reset();
       setErrorMessage(null);
       if (onSuccess) onSuccess();

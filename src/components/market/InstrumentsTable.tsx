@@ -28,6 +28,7 @@ export const InstrumentsTable = ({ instruments }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"buy" | "sell">("buy");
   const [selectedSymbol, setSelectedSymbol] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
 
   const { toggleFavorite } = useFavorites();
 
@@ -35,9 +36,10 @@ export const InstrumentsTable = ({ instruments }: Props) => {
     setOpenRow((prev) => (prev === id ? null : id));
   };
 
-  const openModal = (type: "buy" | "sell", symbol: string) => {
+  const openModal = (type: "buy" | "sell", symbol: string, price: number) => {
     setModalType(type);
     setSelectedSymbol(symbol);
+    setSelectedPrice(price);
     setModalOpen(true);
   };
 
@@ -107,7 +109,7 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                       colorScheme="green" 
                       onClick={(e) => {
                         e.stopPropagation();
-                        openModal("buy", instrument.symbol);
+                        openModal("buy", instrument.symbol, instrument.price);
                       }}
                     >
                       Comprar
@@ -117,7 +119,7 @@ export const InstrumentsTable = ({ instruments }: Props) => {
                       colorScheme="red" 
                       onClick={(e) => {
                         e.stopPropagation();
-                        openModal("sell", instrument.symbol);
+                        openModal("sell", instrument.symbol, instrument.price);
                       }}
                     >
                       Vender
@@ -158,6 +160,7 @@ export const InstrumentsTable = ({ instruments }: Props) => {
         onClose={closeModal}
         type={modalType}
         symbol={selectedSymbol}
+        price={selectedPrice || 0}
       />
     </TableContainer>
   );
