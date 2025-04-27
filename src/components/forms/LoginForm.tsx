@@ -1,9 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Box,
   Button,
-  Container,
   VStack,
   Text,
   useToast,
@@ -62,32 +60,33 @@ export const LoginForm = () => {
   });
 
   return (
-    <Box minH="100vh" bg="white">
-      <Container maxW="container.sm" py={8}>
-        <FormProvider {...methods}>
-          <VStack
-            as="form"
-            onSubmit={methods.handleSubmit((data) => mutation.mutate(data))}
-            spacing={6}
-            align="stretch"
-          >
-            <Text fontSize="3xl" fontWeight="bold" textAlign="center">
-              Iniciar sesión
-            </Text>
-            <LoginInputs />
-            <Button
-              type="submit"
-              colorScheme="red"
-              size="lg"
-              height="56px"
-              width="full"
-              isLoading={mutation.isPending}
-            >
-              Entrar
-            </Button>
-          </VStack>
-        </FormProvider>
-      </Container>
-    </Box>
+    <FormProvider {...methods}>
+      <VStack
+        as="form"
+        onSubmit={methods.handleSubmit((data) => mutation.mutate(data))}
+        spacing={6}
+        align="stretch"
+        w="100%"
+        p={8}
+        borderRadius="lg"
+        boxShadow="md"
+        bg="white"
+      >
+        <Text fontSize="3xl" fontWeight="bold" textAlign="center">
+          Iniciar sesión
+        </Text>
+        <LoginInputs />
+        <Button
+          type="submit"
+          colorScheme="red"
+          size="lg"
+          height="56px"
+          width="full"
+          isLoading={mutation.isPending}
+        >
+          Entrar
+        </Button>
+      </VStack>
+    </FormProvider>
   );
 };

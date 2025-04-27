@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom";
-import { Box, Container } from "@chakra-ui/react";
+import { Box, Container, Flex } from "@chakra-ui/react";
 import { Header } from "../Header";
 
 export const AuthLayout = () => {
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Flex direction="column" minH="100vh" bg="gray.50">
       <Header />
-      <Container maxW="container.sm" py={8}>
-        <Outlet />
-      </Container>
-    </Box>
+      <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+        <Container maxW="container.sm">
+          <Outlet />
+        </Container>
+      </Box>
+    </Flex>
   );
 };

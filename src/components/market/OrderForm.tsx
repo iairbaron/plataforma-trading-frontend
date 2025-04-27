@@ -1,20 +1,22 @@
 import React from "react";
-import { Controller } from "react-hook-form";
 import {
+  Stack,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   NumberInput,
   NumberInputField,
-  Stack,
-  FormErrorMessage,
 } from "@chakra-ui/react";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { OrderFormValues } from "../../hooks/useOrderForm";
 
 interface OrderFormProps {
-  control: any;
-  errors: any;
+  control: Control<OrderFormValues>;
+  errors: FieldErrors<OrderFormValues>;
   symbol: string;
-  handleAmountChange: (value: string) => void;
-  handleTotalChange: (value: string) => void;
+  handleAmountChange: (valueString: string) => void;
+  handleTotalChange: (valueString: string) => void;
+  maxAmount?: number;
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({
@@ -23,6 +25,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
   symbol,
   handleAmountChange,
   handleTotalChange,
+  maxAmount,
 }) => {
   return (
     <Stack spacing={4}>
@@ -48,6 +51,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
           {errors.totalValue && errors.totalValue.message}
         </FormErrorMessage>
       </FormControl>
+
       {/* Campo de cantidad */}
       <FormControl isInvalid={!!errors.amount}>
         <FormLabel>Cantidad de {symbol.toUpperCase()}</FormLabel>
@@ -57,6 +61,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
           render={({ field }) => (
             <NumberInput
               min={0}
+              max={maxAmount}
               precision={4}
               step={0.01}
               value={field.value}
@@ -70,7 +75,6 @@ const OrderForm: React.FC<OrderFormProps> = ({
           {errors.amount && errors.amount.message}
         </FormErrorMessage>
       </FormControl>
-
     </Stack>
   );
 };

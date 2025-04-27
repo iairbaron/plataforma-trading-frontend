@@ -6,10 +6,13 @@ import {
   HStack,
   Avatar,
   Spinner,
+  IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
+import { FiLogOut } from "react-icons/fi";
 
 export const Header = () => {
   const location = useLocation();
@@ -39,12 +42,14 @@ export const Header = () => {
       borderColor="gray.200"
       bg="white"
     >
+      <Flex alignItems="center">
         <Image
           src="/Logo_PUENTE_ARG_Negro_Reducido.svg"
           alt="Puente Logo"
           height="40px"
           mr={6}
         />
+      </Flex>
 
       <Flex alignItems="center" gap={2}>
         {!isAuthenticated ? (
@@ -85,19 +90,18 @@ export const Header = () => {
                 </>
               )}
             </Flex>
-            <Button
-              variant="outline"
-              size="md"
-              borderColor="gray.300"
-              color="gray.700"
-              bg="white"
-              _hover={{
-                bg: "gray.50",
-              }}
-              onClick={handleLogout}
-            >
-              Cerrar Sesión
-            </Button>
+            <Tooltip label="Cerrar sesión" hasArrow placement="bottom">
+              <IconButton
+                aria-label="Cerrar sesión"
+                icon={<FiLogOut size={22} />}
+                colorScheme="red"
+                variant="ghost"
+                onClick={handleLogout}
+                size="lg"
+                fontSize="1.4rem"
+                fontWeight="bold"
+              />
+            </Tooltip>
           </HStack>
         )}
       </Flex>

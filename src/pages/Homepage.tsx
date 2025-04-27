@@ -1,4 +1,13 @@
-import { Box, Container, Tabs, TabList, TabPanels, Tab, TabPanel, Flex, Text, Avatar } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+
+} from "@chakra-ui/react";
 import { InstrumentsList } from "../components/market/InstrumentsList";
 import WalletBalance from "../components/wallet/WalletBalance";
 import { useState } from "react";
@@ -8,20 +17,9 @@ export const Homepage = () => {
 
   return (
     <Container maxW="container.xl" py={4}>
-      <Box 
-        bg="white" 
-        borderRadius="lg" 
-        boxShadow="sm" 
-        p={4} 
-        mb={6}
-      >
-        <Flex justify="space-between" align="center" mb={6}>
-          <Text fontSize="2xl" fontWeight="bold">Hola</Text>
-          <Avatar size="md" />
-        </Flex>
-
-        <Tabs 
-          index={tabIndex} 
+      <Box bg="white" borderRadius="lg" boxShadow="sm" p={4} mb={6}>
+        <Tabs
+          index={tabIndex}
           onChange={setTabIndex}
           colorScheme="blue"
           variant="line"
