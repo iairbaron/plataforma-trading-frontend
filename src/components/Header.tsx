@@ -26,7 +26,6 @@ export const Header = () => {
     setToken(null);
     clearUser();
 
-    // Redireccionar al login
     navigate("/login");
   };
 

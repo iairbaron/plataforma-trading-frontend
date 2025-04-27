@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Heading,
@@ -22,22 +22,22 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { formatCryptoAmount, formatPrice } from "../../utils/formatters";
-import BalanceOperationModal from "./BalanceOperationModal";
+import { BalanceOperationModal } from "./BalanceOperationModal";
 import { OperationType } from "../../services/walletService";
 import { useWallet } from "../../hooks/useWallet";
 
-const WalletBalance: React.FC = () => {
+export const WalletBalance = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operationType, setOperationType] = useState<OperationType>("deposit");
-  
+
   // Usar nuestro hook personalizado
-  const { 
-    walletData: data, 
-    isLoading, 
-    isError, 
-    error, 
+  const {
+    walletData: data,
+    isLoading,
+    isError,
+    error,
     refetch,
-    userName
+    userName,
   } = useWallet();
 
   // Calculamos el color para alternancia de filas
@@ -220,4 +220,3 @@ const WalletBalance: React.FC = () => {
   );
 };
 
-export default WalletBalance;

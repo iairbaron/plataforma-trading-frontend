@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Modal,
   ModalOverlay,
@@ -18,11 +17,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useOrderForm } from "../../hooks/useOrderForm";
-import OrderForm from "./OrderForm";
-import OrderSummary from "./OrderSummary";
+import { OrderForm } from "./OrderForm";
+import { OrderSummary } from "./OrderSummary";
 import { useWallet } from "../../hooks/useWallet";
 import { formatCryptoAmount, formatPrice } from "../../utils/formatters";
-import ErrorAlert from "./ErrorAlert";
+import { ErrorAlert } from "./ErrorAlert";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -32,20 +31,25 @@ interface OrderModalProps {
   price: number;
 }
 
-const OrderModal: React.FC<OrderModalProps> = ({
+export const OrderModal = ({
   isOpen,
   onClose,
   type,
   symbol,
   price,
-}) => {
-  const currentPrice = price;
-
-  // Obtener el balance del wallet
-  const { walletData, isError: isWalletError, refetch: refetchWallet } = useWallet();
+}: OrderModalProps) => {
+  const {
+    walletData,
+    isError: isWalletError,
+    refetch: refetchWallet,
+  } = useWallet();
 
   // Si hay error al cargar los datos del wallet
-  if (isWalletError || !walletData || walletData.coinDetails[symbol.toLowerCase()]?.amount < 0) {
+  if (
+    isWalletError ||
+    !walletData ||
+    walletData.coinDetails[symbol.toLowerCase()]?.amount < 0
+  ) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
@@ -90,15 +94,16 @@ const OrderModal: React.FC<OrderModalProps> = ({
   } = useOrderForm({
     symbol,
     type,
-    currentPrice,
+    currentPrice: price,
     onSuccess: onClose,
   });
 
   // Calcular balance restante para ventas
-  const remainingBalance = type === "sell" ? coinBalance - (watchAmount || 0) : coinBalance;
-  const remainingBalanceUSD = remainingBalance * currentPrice;
-  // Calcular balance USD restante para compras
-  const remainingUsdBalance = type === "buy" ? usdBalance - (watchTotalValue || 0) : usdBalance;
+  const remainingBalance =
+    type === "sell" ? coinBalance - (watchAmount || 0) : coinBalance;
+  const remainingBalanceUSD = remainingBalance * price;
+  const remainingUsdBalance =
+    type === "buy" ? usdBalance - (watchTotalValue || 0) : usdBalance;
 
   return (
     <Modal isOpen={isOpen} onClose={() => handleClose(onClose)} isCentered>
@@ -111,9 +116,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
         <ModalBody>
           {/* Mostrar balance disponible */}
           <Box mb={4} borderWidth="1px" borderRadius="md" p={3}>
-            <Text fontSize="sm" color="gray.600" mb={2}>Balance disponible:</Text>
+            <Text fontSize="sm" color="gray.600" mb={2}>
+              Balance disponible:
+            </Text>
             {type === "buy" ? (
-              // Balance para compras (USD)
               <Flex justify="space-between" align="center">
                 <Text fontSize="sm" fontWeight="medium">
                   ${formatPrice(remainingUsdBalance)} USD
@@ -131,7 +137,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
               </Flex>
             )}
 
-            {((type === "sell" && remainingBalance < 0) || 
+            {((type === "sell" && remainingBalance < 0) ||
               (type === "buy" && remainingUsdBalance < 0)) && (
               <Alert status="error" size="sm" mt={2}>
                 <AlertIcon />
@@ -141,10 +147,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
           </Box>
           <Divider mb={4} />
 
-          {/* Componente de alerta de error */}
           <ErrorAlert message={errorMessage} onClose={clearError} />
 
-          {/* Formulario de orden */}
           <form id="order-form" onSubmit={onSubmit}>
             <OrderForm
               control={control}
@@ -156,9 +160,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
             />
           </form>
 
-          {/* Resumen de la orden */}
           <OrderSummary
-            currentPrice={currentPrice}
+            currentPrice={price}
             totalValue={watchTotalValue}
             type={type}
           />
@@ -173,7 +176,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             isLoading={mutation.isPending || isSubmitting}
             loadingText="Procesando"
             isDisabled={
-              isSubmitting || 
+              isSubmitting ||
               (type === "sell" && remainingBalance < 0) ||
               (type === "buy" && remainingUsdBalance < 0)
             }
@@ -193,5 +196,3 @@ const OrderModal: React.FC<OrderModalProps> = ({
     </Modal>
   );
 };
-
-export default OrderModal;

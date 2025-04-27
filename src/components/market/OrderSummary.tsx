@@ -1,4 +1,3 @@
-import React from "react";
 import { Flex, Text, Divider } from "@chakra-ui/react";
 import { formatPrice } from "../../utils/formatters";
 
@@ -8,12 +7,11 @@ interface OrderSummaryProps {
   type: 'buy' | 'sell';
 }
 
-const OrderSummary: React.FC<OrderSummaryProps> = ({
+export const OrderSummary = ({
   currentPrice,
   totalValue,
   type
-}) => {
-  return (
+}: OrderSummaryProps) => (
     <>
       <Divider my={4} />
       
@@ -28,6 +26,3 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       </Flex>
     </>
   );
-};
-
-export default OrderSummary; 

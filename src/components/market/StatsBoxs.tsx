@@ -5,8 +5,7 @@ interface Props {
   value: string;
 }
 
-export const StatDisplayBox = ({ label, value }: Props) => {
-  return (
+  export const StatDisplayBox = ({ label, value }: Props) => (
     <Box
       flex="1"
       bg="white"
@@ -24,4 +23,3 @@ export const StatDisplayBox = ({ label, value }: Props) => {
       </Text>
     </Box>
   );
-};

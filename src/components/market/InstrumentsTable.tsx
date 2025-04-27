@@ -17,7 +17,7 @@ import { Instrument } from "../../types/market";
 import { StatDisplayBox } from "./StatsBoxs";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useFavorites } from "../../hooks/useFavorites";
-import OrderModal from "./OrderModal";
+import { OrderModal } from "./OrderModal";
 import { formatPrice } from "../../utils/formatters";
 
 interface Props {

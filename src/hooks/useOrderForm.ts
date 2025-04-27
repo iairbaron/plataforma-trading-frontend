@@ -52,11 +52,9 @@ export const useOrderForm = ({ symbol, type, currentPrice, onSuccess }: UseOrder
     formState: { errors, isSubmitting } 
   } = form;
 
-  // Valor total para mostrar en el resumen
   const watchTotalValue = watch('totalValue');
   const watchAmount = watch('amount');
 
-  // Mutación para crear la orden
   const mutation = useMutation({
     mutationFn: orderService.createOrder,
     onSuccess: () => {
@@ -94,17 +92,14 @@ export const useOrderForm = ({ symbol, type, currentPrice, onSuccess }: UseOrder
     setValue('totalValue', newTotal);
   };
 
-  // Manejar cambio en el valor total
   const handleTotalChange = (valueString: string) => {
     const newTotal = parseFloat(valueString || '0');
     setValue('totalValue', newTotal);
     const newAmount = newTotal / currentPrice;
-    // Limitar a máximo 4 decimales para el campo de cantidad
     const formattedAmount = parseFloat(newAmount.toFixed(4));
     setValue('amount', formattedAmount);
   };
 
-  // Función para enviar el formulario
   const onSubmit = hookFormSubmit((data) => {
     setErrorMessage(null);
     

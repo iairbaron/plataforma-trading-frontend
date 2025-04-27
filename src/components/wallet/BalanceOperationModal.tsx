@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -37,13 +37,13 @@ interface BalanceOperationModalProps {
   operationType: OperationType;
 }
 
-const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
+export const BalanceOperationModal = ({
   isOpen,
   onClose,
   operationType,
-}) => {
+}: BalanceOperationModalProps) => {
   const [error, setError] = useState<string | null>(null);
-  const { updateBalance, isUpdating, userName } = useWallet();
+  const { updateBalance, isUpdating, userName, walletData } = useWallet();
 
   // Configuración del formulario
   const {
@@ -63,6 +63,11 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
   
   const onSubmit = handleSubmit((data) => {
     setError(null);
+    // Validación: no permitir retirar más de lo disponible
+    if (operationType === 'withdraw' && walletData && data.amount > walletData.usdBalance) {
+      setError('No puedes retirar más de lo que tienes disponible.');
+      return;
+    }
     updateBalance({
       operation: operationType,
       amount: data.amount,
@@ -133,5 +138,3 @@ const BalanceOperationModal: React.FC<BalanceOperationModalProps> = ({
     </Modal>
   );
 };
-
-export default BalanceOperationModal; 

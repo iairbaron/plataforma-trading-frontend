@@ -16,7 +16,7 @@ import { useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 export const InstrumentsList = () => {
-  const { data: instrumentsData, isLoading: loadingInstruments } =
+  const { data: instrumentsData, isLoading: loadingInstruments, error: instrumentsError } =
     useInstruments();
   const { data: favorites = [], isLoading: loadingFavorites } = useFavorites();
 
@@ -25,7 +25,7 @@ export const InstrumentsList = () => {
 
   if (loadingInstruments || loadingFavorites) return <InstrumentsSkeleton />;
 
-  if (!instrumentsData) {
+  if (instrumentsError) {
     return (
       <Box p={4}>
         <Text color="red.500">Error al cargar instrumentos.</Text>
@@ -33,23 +33,14 @@ export const InstrumentsList = () => {
     );
   }
 
-  // Mostrar error si el array de coins está vacío
-  if (!instrumentsData.coins || instrumentsData.coins.length === 0) {
-    return (
-      <Box p={4}>
-        <Text color="red.500">No se pudieron cargar las monedas. Intenta nuevamente más tarde.</Text>
-      </Box>
-    );
-  }
-
   // Enriquecer instrumentos con isFavorite
-  const enrichedInstruments = instrumentsData.coins.map((coin) => ({
+  const enrichedInstruments = instrumentsData?.coins.map((coin) => ({
     ...coin,
     isFavorite: favorites.includes(coin.symbol.toLowerCase()),
   }));
 
   // Filtrar por búsqueda y favoritos
-  const filteredInstruments = enrichedInstruments.filter((coin) => {
+  const filteredInstruments = enrichedInstruments?.filter((coin) => {
     const matchesSearch =
       coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       coin.symbol.toLowerCase().includes(searchTerm.toLowerCase());
@@ -99,7 +90,7 @@ export const InstrumentsList = () => {
         </Flex>
       </Flex>
 
-      <InstrumentsTable instruments={filteredInstruments} />
+      <InstrumentsTable instruments={filteredInstruments ?? []} />
     </Box>
   );
 };

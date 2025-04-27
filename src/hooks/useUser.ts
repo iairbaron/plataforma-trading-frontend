@@ -12,6 +12,7 @@ export const useUser = () => {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
+  //TODO: Los datos del usuario se pueden obtener desde el backend y usar la cache de react query y no desde el localStorage
   const { data: user, isLoading } = useQuery<User | null>({
     queryKey: ["user"],
     queryFn: async () => {
@@ -32,7 +33,6 @@ export const useUser = () => {
     staleTime: Infinity, // Los datos no caducan hasta que se invaliden explícitamente
   });
 
-  // Función para actualizar los datos del usuario en el caché de React Query
   const updateUser = (userData: User | null) => {
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
@@ -42,7 +42,6 @@ export const useUser = () => {
     queryClient.setQueryData(["user"], userData);
   };
 
-  // Función para limpiar los datos del usuario al cerrar sesión
   const clearUser = () => {
     localStorage.removeItem("user");
     queryClient.setQueryData(["user"], null);

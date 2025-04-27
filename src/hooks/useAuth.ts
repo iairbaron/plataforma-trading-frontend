@@ -6,6 +6,7 @@ interface AuthState {
   setToken: (token: string | null) => void;
 }
 
+// Manejo de token en localStorage - Podria mejorarse seteandolo en las cookies
 export const useAuth = create<AuthState>((set) => ({
   token: localStorage.getItem('token'),
   isAuthenticated: !!localStorage.getItem('token'),

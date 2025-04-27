@@ -1,12 +1,12 @@
-import React from "react";
+import {MouseEvent} from "react";
 import { Alert, AlertIcon, AlertDescription, CloseButton } from "@chakra-ui/react";
 
 interface ErrorAlertProps {
   message: string | null;
-  onClose: (e?: React.MouseEvent) => void;
+  onClose: (e?: MouseEvent) => void;
 }
 
-const ErrorAlert: React.FC<ErrorAlertProps> = ({ message, onClose }) => {
+export const ErrorAlert = ({ message, onClose }: ErrorAlertProps) => {
   if (!message) return null;
   
   return (
@@ -22,5 +22,3 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ message, onClose }) => {
     </Alert>
   );
 };
-
-export default ErrorAlert; 

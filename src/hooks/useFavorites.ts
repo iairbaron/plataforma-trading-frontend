@@ -43,8 +43,8 @@ export const useFavorites = () => {
   });
 
   return {
-    data, // ✅ lista de símbolos favoritos
-    isLoading, // ✅ para el loading inicial
-    toggleFavorite, // ✅ para el corazón
+    data, 
+    isLoading, 
+    toggleFavorite, 
   };
 };

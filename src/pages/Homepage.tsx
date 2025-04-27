@@ -9,7 +9,7 @@ import {
 
 } from "@chakra-ui/react";
 import { InstrumentsList } from "../components/market/InstrumentsList";
-import WalletBalance from "../components/wallet/WalletBalance";
+import {WalletBalance} from "../components/wallet/WalletBalance";
 import { useState } from "react";
 
 export const Homepage = () => {

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Stack,
   FormControl,
@@ -18,17 +17,15 @@ interface OrderFormProps {
   maxAmount?: number;
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({
+export const OrderForm= ({
   control,
   errors,
   symbol,
   handleAmountChange,
   handleTotalChange,
   maxAmount,
-}) => {
-  return (
+}: OrderFormProps) => (
     <Stack spacing={4}>
-      {/* Campo de valor total */}
       <FormControl isInvalid={!!errors.totalValue}>
         <FormLabel>USD</FormLabel>
         <Controller
@@ -50,7 +47,6 @@ const OrderForm: React.FC<OrderFormProps> = ({
         </FormErrorMessage>
       </FormControl>
 
-      {/* Campo de cantidad */}
       <FormControl isInvalid={!!errors.amount}>
         <FormLabel>Cantidad de {symbol.toUpperCase()}</FormLabel>
         <Controller
@@ -74,6 +70,4 @@ const OrderForm: React.FC<OrderFormProps> = ({
       </FormControl>
     </Stack>
   );
-};
 
-export default OrderForm;
