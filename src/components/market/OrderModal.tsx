@@ -44,7 +44,13 @@ export const OrderModal = ({
     refetch: refetchWallet,
   } = useWallet();
 
-  // Si hay error al cargar los datos del wallet
+  const orderForm = useOrderForm({
+    symbol,
+    type,
+    currentPrice: price,
+    onSuccess: onClose,
+  });
+
   if (
     isWalletError ||
     !walletData ||
@@ -77,36 +83,15 @@ export const OrderModal = ({
   const coinBalance = walletData.coinDetails[symbol.toLowerCase()]?.amount || 0;
   const usdBalance = walletData.usdBalance || 0;
 
-  // Usar nuestro hook personalizado
-  const {
-    control,
-    errors,
-    isSubmitting,
-    errorMessage,
-    watchTotalValue,
-    watchAmount,
-    mutation,
-    handleAmountChange,
-    handleTotalChange,
-    onSubmit,
-    clearError,
-    handleClose,
-  } = useOrderForm({
-    symbol,
-    type,
-    currentPrice: price,
-    onSuccess: onClose,
-  });
-
   // Calcular balance restante para ventas
   const remainingBalance =
-    type === "sell" ? coinBalance - (watchAmount || 0) : coinBalance;
+    type === "sell" ? coinBalance - (orderForm.watchAmount || 0) : coinBalance;
   const remainingBalanceUSD = remainingBalance * price;
   const remainingUsdBalance =
-    type === "buy" ? usdBalance - (watchTotalValue || 0) : usdBalance;
+    type === "buy" ? usdBalance - (orderForm.watchTotalValue || 0) : usdBalance;
 
   return (
-    <Modal isOpen={isOpen} onClose={() => handleClose(onClose)} isCentered>
+    <Modal isOpen={isOpen} onClose={() => orderForm.handleClose(onClose)} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -147,22 +132,22 @@ export const OrderModal = ({
           </Box>
           <Divider mb={4} />
 
-          <ErrorAlert message={errorMessage} onClose={clearError} />
+          <ErrorAlert message={orderForm.errorMessage} onClose={orderForm.clearError} />
 
-          <form id="order-form" onSubmit={onSubmit}>
+          <form id="order-form" onSubmit={orderForm.onSubmit}>
             <OrderForm
-              control={control}
-              errors={errors}
+              control={orderForm.control}
+              errors={orderForm.errors}
               symbol={symbol}
-              handleAmountChange={handleAmountChange}
-              handleTotalChange={handleTotalChange}
+              handleAmountChange={orderForm.handleAmountChange}
+              handleTotalChange={orderForm.handleTotalChange}
               maxAmount={type === "sell" ? coinBalance : undefined}
             />
           </form>
 
           <OrderSummary
             currentPrice={price}
-            totalValue={watchTotalValue}
+            totalValue={orderForm.watchTotalValue}
             type={type}
           />
         </ModalBody>
@@ -173,22 +158,22 @@ export const OrderModal = ({
             mr={3}
             type="submit"
             form="order-form"
-            isLoading={mutation.isPending || isSubmitting}
+            isLoading={orderForm.mutation.isPending || orderForm.isSubmitting}
             loadingText="Procesando"
             isDisabled={
-              isSubmitting ||
+              orderForm.isSubmitting ||
               (type === "sell" && remainingBalance < 0) ||
               (type === "buy" && remainingUsdBalance < 0)
             }
             onClick={() => {
-              if (errorMessage) {
-                clearError();
+              if (orderForm.errorMessage) {
+                orderForm.clearError();
               }
             }}
           >
-            {errorMessage ? "Volver a intentar" : "Confirmar"}
+            {orderForm.errorMessage ? "Volver a intentar" : "Confirmar"}
           </Button>
-          <Button variant="ghost" onClick={() => handleClose(onClose)}>
+          <Button variant="ghost" onClick={() => orderForm.handleClose(onClose)}>
             Cancelar
           </Button>
         </ModalFooter>
